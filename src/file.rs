@@ -36,9 +36,9 @@ pub fn load_file(path: impl AsRef<Path>) -> impl Future<Item = Vec<u8>, Error = 
         future::result(create_request(path.as_ref().to_str().expect("The path must be able to be stringified")))
             .and_then(|xhr| future::poll_fn(move || {
                 let status = xhr.status();
-                let state = xhr.ready_state(); 
-                match (status/100, state) {
-                    (2, Done) => {
+                let ready_state = xhr.ready_state(); 
+                match (status/100, ready_state) {
+                    (2, stdweb::web::XhrReadyState::Done) => {
                         let response: Reference = xhr.raw_response().try_into().expect("The response will always be a JS object");
 
                         let array = if TypedArray::<u8>::instance_of(&response) {
