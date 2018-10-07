@@ -19,7 +19,7 @@ use {
         Reference,
         InstanceOf,
         unstable::TryInto,
-        web::{XmlHttpRequest, ArrayBuffer, TypedArray},
+        web::{XmlHttpRequest, ArrayBuffer, TypedArray, XhrReadyState},
     }
 };
 
@@ -38,7 +38,7 @@ pub fn load_file(path: impl AsRef<Path>) -> impl Future<Item = Vec<u8>, Error = 
                 let status = xhr.status();
                 let ready_state = xhr.ready_state(); 
                 match (status/100, ready_state) {
-                    (2, stdweb::web::XhrReadyState::Done) => {
+                    (2, XhrReadyState::Done) => {
                         let response: Reference = xhr.raw_response().try_into().expect("The response will always be a JS object");
 
                         let array = if TypedArray::<u8>::instance_of(&response) {
